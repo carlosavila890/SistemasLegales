@@ -1,0 +1,49 @@
+@model IEnumerable<OrganismoControl>
+@{
+    ViewData["Titulo"] = "ORGANISMOS DE CONTROL";
+    ViewData["Subtitulo"] = "LISTADO";
+
+}
+@section Migas{
+    <li><a asp-action="Index" asp-controller="OrganismoControl">Organismos de control</a></li>
+    <li class="active">Listado</li>
+}
+@section CSS{
+    @{await Html.RenderPartialAsync("_DatatablesCSSPartial");}
+}
+
+<table id="datatable-responsive" class="table table-striped table-bordered dt-responsive nowrap dataTable" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Nombre)
+            </th>
+            <th>
+                Opciones
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        <a asp-controller="OrganismoControl" asp-action="Gestionar" asp-route-id="@item.IdOrganismoControl">Editar</a> |
+                        <a href="javascript:void(0);" class="btnEliminar" id="@item.IdOrganismoControl" data-descripcion="&#191;Desea eliminar el Organismo de control... ?">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesJSPartial");}
+    @{await Html.RenderPartialAsync("_BootboxPartial");}
+    <script src="~/js/jqueryDatatables/jqueryDatatables.min.js"></script>
+    <script src="~/js/organismosControl/index.min.js"></script>
+}
