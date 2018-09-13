@@ -10,21 +10,21 @@ using SistemasLegales.Models.Utiles;
 
 namespace SistemasLegales.Controllers
 {
-    public class OrganismoControlController : Controller
+    public class ProcesoController : Controller
     {
         private readonly SistemasLegalesContext db;
 
-        public OrganismoControlController(SistemasLegalesContext context)
+        public ProcesoController(SistemasLegalesContext context)
         {
             db = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            var lista = new List<OrganismoControl>();
+            var lista = new List<Proceso>();
             try
             {
-                lista = await db.OrganismoControl.OrderBy(c=> c.Nombre).ToListAsync();
+                lista = await db.Proceso.OrderBy(c => c.Nombre).ToListAsync();
             }
             catch (Exception)
             {
@@ -40,11 +40,11 @@ namespace SistemasLegales.Controllers
                 ViewBag.accion = id == null ? "Crear" : "Editar";
                 if (id != null)
                 {
-                    var organismoControl = await db.OrganismoControl.FirstOrDefaultAsync(c => c.IdOrganismoControl == id);
-                    if (organismoControl == null)
+                    var proceso = await db.Proceso.FirstOrDefaultAsync(c => c.IdProceso == id);
+                    if (proceso == null)
                         return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
 
-                    return View(organismoControl);
+                    return View(proceso);
                 }
                 return View();
             }
@@ -56,25 +56,25 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Gestionar(OrganismoControl organismoControl)
+        public async Task<IActionResult> Gestionar(Proceso proceso)
         {
             try
             {
-                ViewBag.accion = organismoControl.IdOrganismoControl == 0 ? "Crear" : "Editar";
+                ViewBag.accion = proceso.IdProceso == 0 ? "Crear" : "Editar";
                 if (ModelState.IsValid)
                 {
                     var existeRegistro = false;
-                    if (organismoControl.IdOrganismoControl == 0)
+                    if (proceso.IdProceso == 0)
                     {
-                        if (!await db.OrganismoControl.AnyAsync(c => c.Nombre.ToUpper().Trim() == organismoControl.Nombre.ToUpper().Trim()))
-                            db.Add(organismoControl);
+                        if (!await db.Proceso.AnyAsync(c => c.Nombre.ToUpper().Trim() == proceso.Nombre.ToUpper().Trim()))
+                            db.Add(proceso);
                         else
                             existeRegistro = true;
                     }
                     else
                     {
-                        if (!await db.OrganismoControl.Where(c => c.Nombre.ToUpper().Trim() == organismoControl.Nombre.ToUpper().Trim()).AnyAsync(c => c.IdOrganismoControl != organismoControl.IdOrganismoControl))
-                            db.Update(organismoControl);
+                        if (!await db.Proceso.Where(c => c.Nombre.ToUpper().Trim() == proceso.Nombre.ToUpper().Trim()).AnyAsync(c => c.IdProceso != proceso.IdProceso))
+                            db.Update(proceso);
                         else
                             existeRegistro = true;
                     }
@@ -86,7 +86,7 @@ namespace SistemasLegales.Controllers
                     else
                         TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ExisteRegistro}";
                 }
-                return View(organismoControl);
+                return View(proceso);
             }
             catch (Exception)
             {
@@ -100,10 +100,10 @@ namespace SistemasLegales.Controllers
         {
             try
             {
-                var organismoControl = await db.OrganismoControl.FirstOrDefaultAsync(m => m.IdOrganismoControl == id);
-                if (organismoControl != null)
+                var proceso = await db.Proceso.FirstOrDefaultAsync(m => m.IdProceso == id);
+                if (proceso != null)
                 {
-                    db.OrganismoControl.Remove(organismoControl);
+                    db.Proceso.Remove(proceso);
                     await db.SaveChangesAsync();
                     return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}");
                 }

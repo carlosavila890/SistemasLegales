@@ -23,6 +23,8 @@
     <link href="~/lib/node-waves/waves.min.css" rel="stylesheet" />
     <link href="~/lib/animate-css/animate.min.css" rel="stylesheet" />
     <link href="~/lib/assets/css/style.min.css" rel="stylesheet" />
+    <link href="~/css/site.min.css" rel="stylesheet" />
+    <link href="~/lib/toastr-notification/toastr.min.css" rel="stylesheet" />
 </head>
 
 <body class="login-page">
@@ -63,13 +65,14 @@
                             <label asp-for="RememberMe"></label>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-block btn-primary ladda-button">
+                    <button type="submit" class="btn btn-block btn-primary ladda-button" id="btn-guardar">
                         <span class="ladda-label">ENTRAR</span>
                     </button>
                 </form>
             </div>
         </div>
     </div>
+    <span class="hide" id="spanMensaje">@TempData["Mensaje"]</span>
 
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.min.js"></script>
@@ -79,10 +82,12 @@
 
     <script src="~/lib/ladda/spin.min.js"></script>
     <script src="~/lib/ladda/ladda.min.js"></script>
-    <script src="~/js/ladda/laddaButtonSubmit.js"></script>
-    @*<script src="~/lib/assets/js/pages/ui/ladda-spinner.js"></script>*@
+
+    <script src="~/lib/toastr-notification/toastr.min.js"></script>
+    <script src="~/js/toastr/mensajes.min.js"></script>
 
     <script src="~/lib/assets/js/demo.min.js"></script>
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/app/site.min.js"></script>
 </body>
 </html>

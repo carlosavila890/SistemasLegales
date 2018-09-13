@@ -20,6 +20,7 @@
     <link href="~/lib/assets/css/style.min.css" rel="stylesheet" />
     <link href="~/lib/assets/css/layout.min.css" rel="stylesheet" />
     <link href="~/lib/assets/css/themes/main_theme.min.css" rel="stylesheet" />
+    <link href="~/css/site.min.css" rel="stylesheet" />
 </head>
 <body class="theme-blue light layout-fixed">
     <div class="wrapper">
@@ -91,6 +92,26 @@
                                 <span>Organismos de control</span>
                             </a>
                         </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="RequisitoLegal" title="Requisitos legales">
+                                <span>Requisitos legales</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Ciudad" title="Ciudades">
+                                <span>Ciudades</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Proceso" title="Procesos">
+                                <span>Procesos</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Actor" title="Actores">
+                                <span>Actores</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
             </div>
@@ -139,6 +160,9 @@
 
     <script src="~/lib/toastr-notification/toastr.min.js"></script>
     <script src="~/js/toastr/mensajes.min.js"></script>
+
+    <script src="~/lib/ladda/spin.min.js"></script>
+    <script src="~/lib/ladda/ladda.min.js"></script>
 
     @RenderSection("Scripts", required: false)
 

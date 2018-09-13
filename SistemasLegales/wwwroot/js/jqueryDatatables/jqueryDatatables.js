@@ -17,10 +17,11 @@
                 var id = btnEliminar.prop("id");
                 MiApp.Bootbox.init("Eliminar", descripcion, null, [], {
                     isGuardar: true, hideAlGuardar: true, callbackGuardar: function () {
-                        alert("Aceptar");
+                        $("#id").val(id);
+                        $("#formEliminar").submit();
                     }
                 });
             });
         }
     }
-}();
+}().init();

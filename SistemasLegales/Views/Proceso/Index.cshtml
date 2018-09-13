@@ -1,11 +1,11 @@
-@model IEnumerable<OrganismoControl>
+@model IEnumerable<Proceso>
 @{
-    ViewData["Titulo"] = "ORGANISMOS DE CONTROL";
+    ViewData["Titulo"] = "PROCESOS";
     ViewData["Subtitulo"] = "LISTADO";
 
 }
 @section Migas{
-    <li><a asp-action="Index">Organismos de control</a></li>
+    <li><a asp-action="Index">Procesos</a></li>
     <li class="active">Listado</li>
 }
 @section CSS{
@@ -37,8 +37,8 @@
                         @Html.DisplayFor(modelItem => item.Nombre)
                     </td>
                     <td>
-                        <a asp-action="Gestionar" asp-route-id="@item.IdOrganismoControl">Editar</a> |
-                        <a href="javascript:void(0);" class="btnEliminar" id="@item.IdOrganismoControl" data-descripcion="&#191;Desea eliminar el Organismo de control... ?">Eliminar</a>
+                        <a asp-action="Gestionar" asp-route-id="@item.IdProceso">Editar</a> |
+                        <a href="javascript:void(0);" class="btnEliminar" id="@item.IdProceso" data-descripcion="&#191;Desea eliminar el Proceso... ?">Eliminar</a>
                     </td>
                 </tr>
             }

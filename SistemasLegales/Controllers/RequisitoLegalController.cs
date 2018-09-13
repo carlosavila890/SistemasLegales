@@ -10,21 +10,21 @@ using SistemasLegales.Models.Utiles;
 
 namespace SistemasLegales.Controllers
 {
-    public class OrganismoControlController : Controller
+    public class RequisitoLegalController : Controller
     {
         private readonly SistemasLegalesContext db;
 
-        public OrganismoControlController(SistemasLegalesContext context)
+        public RequisitoLegalController(SistemasLegalesContext context)
         {
             db = context;
         }
 
         public async Task<IActionResult> Index()
         {
-            var lista = new List<OrganismoControl>();
+            var lista = new List<RequisitoLegal>();
             try
             {
-                lista = await db.OrganismoControl.OrderBy(c=> c.Nombre).ToListAsync();
+                lista = await db.RequisitoLegal.OrderBy(c => c.Nombre).ToListAsync();
             }
             catch (Exception)
             {
@@ -40,11 +40,11 @@ namespace SistemasLegales.Controllers
                 ViewBag.accion = id == null ? "Crear" : "Editar";
                 if (id != null)
                 {
-                    var organismoControl = await db.OrganismoControl.FirstOrDefaultAsync(c => c.IdOrganismoControl == id);
-                    if (organismoControl == null)
+                    var requisitoLegal = await db.RequisitoLegal.FirstOrDefaultAsync(c => c.IdRequisitoLegal == id);
+                    if (requisitoLegal == null)
                         return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
 
-                    return View(organismoControl);
+                    return View(requisitoLegal);
                 }
                 return View();
             }
@@ -56,25 +56,25 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Gestionar(OrganismoControl organismoControl)
+        public async Task<IActionResult> Gestionar(RequisitoLegal requisitoLegal)
         {
             try
             {
-                ViewBag.accion = organismoControl.IdOrganismoControl == 0 ? "Crear" : "Editar";
+                ViewBag.accion = requisitoLegal.IdRequisitoLegal == 0 ? "Crear" : "Editar";
                 if (ModelState.IsValid)
                 {
                     var existeRegistro = false;
-                    if (organismoControl.IdOrganismoControl == 0)
+                    if (requisitoLegal.IdRequisitoLegal == 0)
                     {
-                        if (!await db.OrganismoControl.AnyAsync(c => c.Nombre.ToUpper().Trim() == organismoControl.Nombre.ToUpper().Trim()))
-                            db.Add(organismoControl);
+                        if (!await db.RequisitoLegal.AnyAsync(c => c.Nombre.ToUpper().Trim() == requisitoLegal.Nombre.ToUpper().Trim()))
+                            db.Add(requisitoLegal);
                         else
                             existeRegistro = true;
                     }
                     else
                     {
-                        if (!await db.OrganismoControl.Where(c => c.Nombre.ToUpper().Trim() == organismoControl.Nombre.ToUpper().Trim()).AnyAsync(c => c.IdOrganismoControl != organismoControl.IdOrganismoControl))
-                            db.Update(organismoControl);
+                        if (!await db.RequisitoLegal.Where(c => c.Nombre.ToUpper().Trim() == requisitoLegal.Nombre.ToUpper().Trim()).AnyAsync(c => c.IdRequisitoLegal != requisitoLegal.IdRequisitoLegal))
+                            db.Update(requisitoLegal);
                         else
                             existeRegistro = true;
                     }
@@ -86,7 +86,7 @@ namespace SistemasLegales.Controllers
                     else
                         TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ExisteRegistro}";
                 }
-                return View(organismoControl);
+                return View(requisitoLegal);
             }
             catch (Exception)
             {
@@ -100,10 +100,10 @@ namespace SistemasLegales.Controllers
         {
             try
             {
-                var organismoControl = await db.OrganismoControl.FirstOrDefaultAsync(m => m.IdOrganismoControl == id);
-                if (organismoControl != null)
+                var requisitoLegal = await db.RequisitoLegal.FirstOrDefaultAsync(m => m.IdRequisitoLegal == id);
+                if (requisitoLegal != null)
                 {
-                    db.OrganismoControl.Remove(organismoControl);
+                    db.RequisitoLegal.Remove(requisitoLegal);
                     await db.SaveChangesAsync();
                     return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}");
                 }

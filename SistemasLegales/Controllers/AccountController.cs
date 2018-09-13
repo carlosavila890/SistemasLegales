@@ -12,6 +12,7 @@ using Microsoft.Extensions.Options;
 using SistemasLegales.Models;
 using SistemasLegales.Models.AccountViewModels;
 using SistemasLegales.Models.Entidades;
+using SistemasLegales.Models.Utiles;
 using SistemasLegales.Services;
 
 namespace SistemasLegales.Controllers
@@ -82,11 +83,11 @@ namespace SistemasLegales.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("Password", "Credenciales inválidas.");
+                    TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.CredencialesInvalidas}";
                     return View(model);
                 }
             }
-            ModelState.AddModelError("Password", "Credenciales inválidas.");
+            TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.CredencialesInvalidas}";
             return View(model);
         }
 

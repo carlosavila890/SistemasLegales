@@ -1,11 +1,11 @@
-@model IEnumerable<OrganismoControl>
+@model IEnumerable<Actor>
 @{
-    ViewData["Titulo"] = "ORGANISMOS DE CONTROL";
+    ViewData["Titulo"] = "ACTORES";
     ViewData["Subtitulo"] = "LISTADO";
 
 }
 @section Migas{
-    <li><a asp-action="Index">Organismos de control</a></li>
+    <li><a asp-action="Index">Actores</a></li>
     <li class="active">Listado</li>
 }
 @section CSS{
@@ -21,7 +21,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstOrDefault().Nombre)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Nombres)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Departamento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Email)
             </th>
             <th>
                 Opciones
@@ -34,11 +40,17 @@
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Nombre)
+                        @Html.DisplayFor(modelItem => item.Nombres)
+                    </td>
+                     <td>
+                        @Html.DisplayFor(modelItem => item.Departamento)
+                    </td>
+                     <td>
+                        @Html.DisplayFor(modelItem => item.Email)
                     </td>
                     <td>
-                        <a asp-action="Gestionar" asp-route-id="@item.IdOrganismoControl">Editar</a> |
-                        <a href="javascript:void(0);" class="btnEliminar" id="@item.IdOrganismoControl" data-descripcion="&#191;Desea eliminar el Organismo de control... ?">Eliminar</a>
+                        <a asp-action="Gestionar" asp-route-id="@item.IdActor">Editar</a> |
+                        <a href="javascript:void(0);" class="btnEliminar" id="@item.IdActor" data-descripcion="&#191;Desea eliminar el Actor... ?">Eliminar</a>
                     </td>
                 </tr>
             }
