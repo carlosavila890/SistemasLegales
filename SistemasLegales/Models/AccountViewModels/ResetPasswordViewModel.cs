@@ -8,18 +8,23 @@ namespace SistemasLegales.Models.AccountViewModels
 {
     public class ResetPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
-
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [Required(ErrorMessage = "Debe introducir la {0}.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La {0} no puede tener más de {1} y menos de {2} caracteres.")]
         [DataType(DataType.Password)]
+        [Display(Name = "Contraseña anterior")]
+        public string PasswordAnterior { get; set; }
+
+        [Required(ErrorMessage = "Debe introducir la {0}.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La {0} no puede tener más de {1} y menos de {2} caracteres.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Nueva contraseña")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Debe introducir la {0}.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "La {0} no puede tener más de {1} y menos de {2} caracteres.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Confirmar contraseña")]
+        [Compare("Password", ErrorMessage = "La contraseña y su confirmación no coinciden.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }

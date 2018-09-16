@@ -49,9 +49,7 @@ namespace SistemasLegales.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl = null)
         {
-            // Clear the existing external cookie to ensure a clean login process
             await HttpContext.Authentication.SignOutAsync(_externalCookieScheme);
-
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -297,9 +295,9 @@ namespace SistemasLegales.Controllers
         // GET: /Account/ResetPassword
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        public IActionResult ResetPassword()
         {
-            return code == null ? View("Error") : View();
+            return View();
         }
 
         //
@@ -311,21 +309,30 @@ namespace SistemasLegales.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ModeloInvalido}";
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+
+            var passwordAnteriorCorrecto = await _userManager.CheckPasswordAsync(_userManager.Users.FirstOrDefault(c=> c.UserName == User.Identity.Name), model.PasswordAnterior);
+            if (!passwordAnteriorCorrecto)
+                ModelState.AddModelError("PasswordAnterior", "La contraseña anterior es incorrecta.");
+            else
             {
-                // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                var user = await _userManager.FindByNameAsync(User.Identity.Name);
+                if (user == null)
+                {
+                    // Don't reveal that the user does not exist
+                    return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                }
+                var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                }
+                AddErrors(result);
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-            }
-            AddErrors(result);
-            return View();
+            TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ErrorPassword}";
+            return View(model);
         }
 
         //

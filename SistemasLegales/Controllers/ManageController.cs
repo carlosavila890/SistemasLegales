@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using SistemasLegales.Models;
 using SistemasLegales.Models.Entidades;
 using SistemasLegales.Models.ManageViewModels;
+using SistemasLegales.Models.Utiles;
 using SistemasLegales.Services;
 
 namespace SistemasLegales.Controllers
@@ -225,21 +226,25 @@ namespace SistemasLegales.Controllers
         {
             if (!ModelState.IsValid)
             {
+                TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ModeloInvalido}";
                 return View(model);
             }
+
             var user = await GetCurrentUserAsync();
             if (user != null)
             {
-                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                var result = await _userManager.ChangePasswordAsync(user, model.PasswordAnterior, model.Password);
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     _logger.LogInformation(3, "User changed their password successfully.");
-                    return RedirectToAction(nameof(Index), new { Message = ManageMessageId.ChangePasswordSuccess });
+                    TempData["Mensaje"] = $"{Mensaje.Informacion}|{Mensaje.Satisfactorio}";
+                    return RedirectToAction(nameof(ChangePassword));
                 }
                 AddErrors(result);
                 return View(model);
             }
+            TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ErrorPassword}";
             return RedirectToAction(nameof(Index), new { Message = ManageMessageId.Error });
         }
 

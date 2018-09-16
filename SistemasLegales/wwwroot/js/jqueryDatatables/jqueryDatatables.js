@@ -1,8 +1,7 @@
 ﻿MiApp.Datatables = function () {
     return {
         init: function (idTabla) {
-            this.eventoBtnEliminar();
-            this.inicializarDatatable(idTabla);            
+            this.inicializarDatatable(idTabla);
         },
 
         inicializarDatatable: function (idTabla) {
@@ -10,18 +9,17 @@
             $('#' + idTable).DataTable();
         },
 
-        eventoBtnEliminar: function () {
-            $(".btnEliminar").on("click", function (e) {
-                var btnEliminar = $(e.currentTarget);
-                var descripcion = btnEliminar.data("descripcion");
-                var id = btnEliminar.prop("id");
-                MiApp.Bootbox.init("Eliminar", descripcion, null, [], {
-                    isGuardar: true, hideAlGuardar: true, callbackGuardar: function () {
-                        $("#id").val(id);
-                        $("#formEliminar").submit();
-                    }
-                });
+        eventoBtnEliminar: function (e) {
+            var btnEliminar = $(e);
+            var descripcion = btnEliminar.data("descripcion");
+            var id = btnEliminar.prop("id");
+            MiApp.Bootbox.init("Eliminar", descripcion, null, [], {
+                isGuardar: true, hideAlGuardar: true, callbackGuardar: function () {
+                    $("#id").val(id);
+                    $("#formEliminar").submit();
+                }
             });
         }
     }
-}().init();
+}();
+MiApp.Datatables.init();

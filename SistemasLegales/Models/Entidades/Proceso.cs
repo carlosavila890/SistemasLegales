@@ -8,7 +8,7 @@ namespace SistemasLegales.Models.Entidades
     {
         public Proceso()
         {
-            AdminRequisitoLegal = new HashSet<AdminRequisitoLegal>();
+            AdminRequisitoLegal = new HashSet<Requisito>();
         }
 
         public int IdProceso { get; set; }
@@ -18,6 +18,6 @@ namespace SistemasLegales.Models.Entidades
         [Display(Name = "Proceso")]
         public string Nombre { get; set; }
 
-        public virtual ICollection<AdminRequisitoLegal> AdminRequisitoLegal { get; set; }
+        public virtual ICollection<Requisito> AdminRequisitoLegal { get; set; }
     }
 }

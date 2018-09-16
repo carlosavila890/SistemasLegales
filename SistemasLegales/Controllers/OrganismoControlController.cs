@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemasLegales.Models.Entidades;
@@ -10,6 +11,7 @@ using SistemasLegales.Models.Utiles;
 
 namespace SistemasLegales.Controllers
 {
+    [Authorize]
     public class OrganismoControlController : Controller
     {
         private readonly SistemasLegalesContext db;
@@ -33,6 +35,7 @@ namespace SistemasLegales.Controllers
             return View(lista);
         }
 
+        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Gestionar(int? id)
         {
             try
@@ -56,6 +59,7 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Gestionar(OrganismoControl organismoControl)
         {
             try
@@ -84,9 +88,9 @@ namespace SistemasLegales.Controllers
                         return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}");
                     }
                     else
-                        TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ExisteRegistro}";
+                        return this.VistaError(organismoControl, $"{Mensaje.Error}|{Mensaje.ExisteRegistro}");
                 }
-                return View(organismoControl);
+                return this.VistaError(organismoControl, $"{Mensaje.Error}|{Mensaje.ModeloInvalido}");
             }
             catch (Exception)
             {
@@ -96,6 +100,7 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Eliminar(int id)
         {
             try

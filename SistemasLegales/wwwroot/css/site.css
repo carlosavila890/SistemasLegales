@@ -10,6 +10,10 @@
     padding-top: 5px !important;
 }
 
+.padding-top-15 {
+    padding-top: 15px !important;
+}
+
 .padding-bottom-0 {
     padding-bottom: 0 !important;
 }
@@ -85,4 +89,13 @@
 .ladda-spinner {
     position:relative;
     bottom:9px;
+}
+
+.btndatepicker:hover{
+    cursor: pointer;
+}
+
+.logoposition {
+    position: relative;
+    top: 8px;
 }

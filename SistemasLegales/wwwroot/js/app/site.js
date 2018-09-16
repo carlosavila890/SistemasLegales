@@ -26,4 +26,5 @@
             onSubmitForm();
         }
     }
-}().init();
+}();
+MiApp.Generales.init();

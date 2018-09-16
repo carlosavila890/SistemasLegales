@@ -8,9 +8,10 @@ namespace SistemasLegales.Models.Entidades
     public partial class SistemasLegalesContext : IdentityDbContext<ApplicationUser>
     {
         public virtual DbSet<Actor> Actor { get; set; }
-        public virtual DbSet<AdminRequisitoLegal> AdminRequisitoLegal { get; set; }
+        public virtual DbSet<Requisito> Requisito { get; set; }
         public virtual DbSet<Ciudad> Ciudad { get; set; }
         public virtual DbSet<Documento> Documento { get; set; }
+        public virtual DbSet<DocumentoRequisito> DocumentoRequisito { get; set; }
         public virtual DbSet<OrganismoControl> OrganismoControl { get; set; }
         public virtual DbSet<Proceso> Proceso { get; set; }
         public virtual DbSet<RequisitoLegal> RequisitoLegal { get; set; }
@@ -41,9 +42,9 @@ namespace SistemasLegales.Models.Entidades
                     .HasColumnType("varchar(200)");
             });
 
-            modelBuilder.Entity<AdminRequisitoLegal>(entity =>
+            modelBuilder.Entity<Requisito>(entity =>
             {
-                entity.HasKey(e => e.IdAdminRequisitoLegal)
+                entity.HasKey(e => e.IdRequisito)
                     .HasName("PK_AdminRequisitoLegal");
 
                 entity.Property(e => e.EmailNotificacion1)
@@ -54,7 +55,7 @@ namespace SistemasLegales.Models.Entidades
                     .IsRequired()
                     .HasColumnType("varchar(100)");
 
-                entity.Property(e => e.Observaciones).HasColumnType("varchar(500)");
+                entity.Property(e => e.Observaciones).HasColumnType("varchar(1000)");
 
                 entity.HasOne(d => d.ActorCustodioDocumento)
                     .WithMany(p => p.AdminRequisitoLegalIdActorCustodioDocumento)
@@ -125,6 +126,24 @@ namespace SistemasLegales.Models.Entidades
                     .HasColumnType("varchar(200)");
             });
 
+            modelBuilder.Entity<DocumentoRequisito>(entity =>
+            {
+                entity.HasKey(e => e.IdDocumentoRequisito)
+                    .HasName("PK_DocumentoRequisito");
+
+                entity.Property(e => e.Nombre)
+                    .IsRequired()
+                    .HasColumnType("varchar(200)");
+
+                entity.Property(e => e.Url).HasColumnType("varchar(1024)");
+
+                entity.HasOne(d => d.Requisito)
+                    .WithMany(p => p.DocumentoRequisito)
+                    .HasForeignKey(d => d.IdRequisito)
+                    .OnDelete(DeleteBehavior.Cascade)
+                    .HasConstraintName("FK_DocumentoRequisito_Requisito");
+            });
+
             modelBuilder.Entity<OrganismoControl>(entity =>
             {
                 entity.HasKey(e => e.IdOrganismoControl)
@@ -159,10 +178,6 @@ namespace SistemasLegales.Models.Entidades
             {
                 entity.HasKey(e => e.IdStatus)
                     .HasName("PK_Status");
-
-                entity.Property(e => e.Color)
-                    .IsRequired()
-                    .HasColumnType("varchar(100)");
 
                 entity.Property(e => e.Nombre)
                     .IsRequired()

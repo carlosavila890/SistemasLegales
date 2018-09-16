@@ -8,9 +8,9 @@ namespace SistemasLegales.Models.Entidades
     {
         public Actor()
         {
-            AdminRequisitoLegalIdActorCustodioDocumento = new HashSet<AdminRequisitoLegal>();
-            AdminRequisitoLegalIdActorDuennoProceso = new HashSet<AdminRequisitoLegal>();
-            AdminRequisitoLegalIdActorResponsableGestSeg = new HashSet<AdminRequisitoLegal>();
+            AdminRequisitoLegalIdActorCustodioDocumento = new HashSet<Requisito>();
+            AdminRequisitoLegalIdActorDuennoProceso = new HashSet<Requisito>();
+            AdminRequisitoLegalIdActorResponsableGestSeg = new HashSet<Requisito>();
         }
 
         public int IdActor { get; set; }
@@ -30,8 +30,8 @@ namespace SistemasLegales.Models.Entidades
         [Display(Name = "Correo electrónico")]
         public string Email { get; set; }
 
-        public virtual ICollection<AdminRequisitoLegal> AdminRequisitoLegalIdActorCustodioDocumento { get; set; }
-        public virtual ICollection<AdminRequisitoLegal> AdminRequisitoLegalIdActorDuennoProceso { get; set; }
-        public virtual ICollection<AdminRequisitoLegal> AdminRequisitoLegalIdActorResponsableGestSeg { get; set; }
+        public virtual ICollection<Requisito> AdminRequisitoLegalIdActorCustodioDocumento { get; set; }
+        public virtual ICollection<Requisito> AdminRequisitoLegalIdActorDuennoProceso { get; set; }
+        public virtual ICollection<Requisito> AdminRequisitoLegalIdActorResponsableGestSeg { get; set; }
     }
 }
