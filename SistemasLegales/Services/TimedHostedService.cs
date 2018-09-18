@@ -62,9 +62,14 @@ namespace SistemasLegales.Services
 
         private async Task EnviarNotificacionRequisitos(object state)
         {
-            var listadoRequisitos = await db.Requisito.Where(c => c.FechaCaducidad != null && !c.NotificacionEnviada).ToListAsync();
-            foreach (var item in listadoRequisitos)
-                await item.EnviarEmailNotificaion(emailSender, db);
+            try
+            {
+                var listadoRequisitos = await db.Requisito.Where(c => c.FechaCaducidad != null && !c.NotificacionEnviada).ToListAsync();
+                foreach (var item in listadoRequisitos)
+                    await item.EnviarEmailNotificaion(emailSender, db);
+            }
+            catch (Exception)
+            { }
         }
     }
 }

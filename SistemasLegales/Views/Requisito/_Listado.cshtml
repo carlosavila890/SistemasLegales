@@ -21,14 +21,9 @@
             <th>
                 Estado
             </th>
-            @{ 
-                if (User.Identity.Name == Perfiles.Gestor)
-                {
-                    <th>
-                        Opciones
-                    </th>
-                }
-            }
+            <th>
+                Opciones
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -54,15 +49,18 @@
                     <td>
                         @{await Html.RenderPartialAsync("_Badge", item);}
                     </td>
-                    @{ 
-                        if (User.Identity.Name == Perfiles.Gestor)
-                        {
-                            <td>
-                                <a asp-action="Gestionar" asp-route-id="@item.IdRequisito">Editar</a> |
+                    <td>
+                        <a asp-action="Detalles" asp-route-id="@item.IdRequisito">Detalles</a>
+                        @{ 
+                            if (User.Identity.Name == Perfiles.Gestor)
+                            {
+                                <span> | </span>
+                                <a asp-action="Gestionar" asp-route-id="@item.IdRequisito">Editar</a><span> | </span>
                                 <a href="javascript:void(0);" class="btnEliminar" id="@item.IdRequisito" onclick="MiApp.Datatables.eventoBtnEliminar(this)" data-descripcion="&#191;Desea eliminar el Requisito... ?">Eliminar</a>
-                            </td>
+                            }
                         }
-                    }
+                    </td>
+                    
                 </tr>
             }
         }

@@ -140,6 +140,37 @@ namespace SistemasLegales.Controllers
             }
         }
 
+        public async Task<IActionResult> Detalles(int? id)
+        {
+            try
+            {
+                if (id != null)
+                {
+                    var requisito = await db.Requisito
+                        .Include(c => c.OrganismoControl)
+                            .Include(c => c.RequisitoLegal)
+                            .Include(c => c.Documento)
+                            .Include(c => c.Ciudad)
+                            .Include(c => c.Proceso)
+                            .Include(c => c.ActorDuennoProceso)
+                            .Include(c => c.ActorResponsableGestSeg)
+                            .Include(c => c.ActorCustodioDocumento)
+                            .Include(c => c.Status)
+                            .Include(c=> c.DocumentoRequisito)
+                        .FirstOrDefaultAsync(c => c.IdRequisito == id);
+                    if (requisito == null)
+                        return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
+
+                    return View(requisito);
+                }
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
+            }
+            catch (Exception)
+            {
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.ErrorCargarDatos}");
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "Gestion")]
@@ -210,6 +241,18 @@ namespace SistemasLegales.Controllers
             {
                 return StatusCode(500);
             }
+        }
+
+        public async Task<IActionResult> DescargarArchivo(int id)
+        {
+            try
+            {
+                var documentoRequisitoTransfer = await uploadFileService.GetFileDocumentoRequisito(id);
+                return File(documentoRequisitoTransfer.Fichero, MimeTypes.GetMimeType(documentoRequisitoTransfer.Nombre), documentoRequisitoTransfer.Nombre);
+            }
+            catch (Exception)
+            { }
+            return StatusCode(500);
         }
     }
 }
