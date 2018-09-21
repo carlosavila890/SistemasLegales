@@ -27,5 +27,10 @@ namespace SistemasLegales.Models.AccountViewModels
         [Display(Name = "Confirmar contraseña")]
         [Compare("Password", ErrorMessage = "La contraseña y su confirmación no coinciden.")]
         public string ConfirmPassword { get; set; }
+
+        [Required(ErrorMessage = "Debe seleccionar el {0}.")]
+        [Display(Name = "Perfil")]
+        [Range(1, double.MaxValue, ErrorMessage = "Debe seleccionar el {0}.")]
+        public string Role { get; set; }
     }
 }

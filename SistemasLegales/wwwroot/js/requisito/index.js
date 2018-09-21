@@ -1,6 +1,6 @@
 ﻿MiApp.Requisito = function () {
-    var semaforoVerde = true;
-    var semaforoAmarillo = true;
+    var semaforoVerde = false;
+    var semaforoAmarillo = false;
     var semaforoRojo = true;
 
     this.eventoOrganismoControl = function () {
@@ -63,7 +63,11 @@
             method: "POST",
             data: {
                 requisito: {
-                    IdOrganismoControl: $("#IdOrganismoControl").val(),
+                    Documento: {
+                        RequisitoLegal: {
+                            IdOrganismoControl: $("#IdOrganismoControl").val(),
+                        }
+                    },
                     IdActorResponsableGestSeg: $("#IdActorResponsableGestSeg").val(),
                     Anno: $("#Anno").val(),
                     SemaforoVerde: semaforoVerde,
@@ -90,6 +94,7 @@
             eventoResponsableGestSeg();
             eventoFechaAnno();
             eventoSemaforoEstado();
+            partialViewListadoTabla();
         }
     }
 }();

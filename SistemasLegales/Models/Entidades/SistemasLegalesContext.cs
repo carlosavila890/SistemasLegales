@@ -81,24 +81,14 @@ namespace SistemasLegales.Models.Entidades
                     .HasConstraintName("FK_AdminRequisitoLegal_Ciudad");
 
                 entity.HasOne(d => d.Documento)
-                    .WithMany(p => p.AdminRequisitoLegal)
+                    .WithMany(p => p.Requisito)
                     .HasForeignKey(d => d.IdDocumento)
-                    .HasConstraintName("FK_AdminRequisitoLegal_Documento");
-
-                entity.HasOne(d => d.OrganismoControl)
-                    .WithMany(p => p.AdminRequisitoLegal)
-                    .HasForeignKey(d => d.IdOrganismoControl)
-                    .HasConstraintName("FK_AdminRequisitoLegal_OrganismoControl");
+                    .HasConstraintName("FK_Requisito_Documento");
 
                 entity.HasOne(d => d.Proceso)
                     .WithMany(p => p.AdminRequisitoLegal)
                     .HasForeignKey(d => d.IdProceso)
                     .HasConstraintName("FK_AdminRequisitoLegal_Proceso");
-
-                entity.HasOne(d => d.RequisitoLegal)
-                    .WithMany(p => p.AdminRequisitoLegal)
-                    .HasForeignKey(d => d.IdRequisitoLegal)
-                    .HasConstraintName("FK_AdminRequisitoLegal_RequisitoLegal");
 
                 entity.HasOne(d => d.Status)
                     .WithMany(p => p.AdminRequisitoLegal)
@@ -124,6 +114,11 @@ namespace SistemasLegales.Models.Entidades
                 entity.Property(e => e.Nombre)
                     .IsRequired()
                     .HasColumnType("varchar(200)");
+
+                entity.HasOne(d => d.RequisitoLegal)
+                    .WithMany(p => p.Documento)
+                    .HasForeignKey(d => d.IdRequisitoLegal)
+                    .HasConstraintName("FK_Documento_RequisitoLegal");
             });
 
             modelBuilder.Entity<DocumentoRequisito>(entity =>
@@ -172,6 +167,11 @@ namespace SistemasLegales.Models.Entidades
                 entity.Property(e => e.Nombre)
                     .IsRequired()
                     .HasColumnType("varchar(200)");
+
+                entity.HasOne(d => d.OrganismoControl)
+                    .WithMany(p => p.RequisitoLegal)
+                    .HasForeignKey(d => d.IdOrganismoControl)
+                    .HasConstraintName("FK_RequisitoLegal_OrganismoControl");
             });
 
             modelBuilder.Entity<Status>(entity =>

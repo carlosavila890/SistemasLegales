@@ -8,7 +8,7 @@ namespace SistemasLegales.Models.Entidades
     {
         public RequisitoLegal()
         {
-            AdminRequisitoLegal = new HashSet<Requisito>();
+            Documento = new HashSet<Documento>();
         }
 
         public int IdRequisitoLegal { get; set; }
@@ -18,6 +18,12 @@ namespace SistemasLegales.Models.Entidades
         [Display(Name = "Requisito legal")]
         public string Nombre { get; set; }
 
-        public virtual ICollection<Requisito> AdminRequisitoLegal { get; set; }
+        [Display(Name = "Organismo de control")]
+        [Required(ErrorMessage = "Debe seleccionar el {0}.")]
+        [Range(1, double.MaxValue, ErrorMessage = "Debe seleccionar el {0}.")]
+        public int IdOrganismoControl { get; set; }
+        public virtual OrganismoControl OrganismoControl { get; set; }
+
+        public virtual ICollection<Documento> Documento { get; set; }
     }
 }

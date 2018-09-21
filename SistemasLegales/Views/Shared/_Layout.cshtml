@@ -92,57 +92,77 @@
                             </a>
                         </li>
 
-                        <li class="nav-heading ">
-                            <span>ADMINISTRACIÓN</span>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Requisito" title="Gestión de requisitos">
-                                <span>Gestión de requisitos</span>
-                            </a>
-                        </li>
+                        @{ 
+                            if (User.IsInRole(Perfiles.Gestor))
+                            {
+                                <li class="nav-heading ">
+                                    <span>ADMINISTRACIÓN</span>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Requisito" title="Gestión de requisitos">
+                                        <span>Gestión de requisitos</span>
+                                    </a>
+                                </li>
 
-                        <li class="nav-heading ">
-                            <span>GESTIÓN GERENCIAL</span>
-                        </li>
-                        <li>
-                            <a href="javscript: void(0);" title="Estado de requisitos">
-                                <span>Estado de requisitos</span>
-                            </a>
-                        </li>
+                                <li class="nav-heading ">
+                                    <span>MANTENIMIENTO</span>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="OrganismoControl" title="Organismos de control">
+                                        <span>Organismos de control</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="RequisitoLegal" title="Requisitos legales">
+                                        <span>Requisitos legales</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Ciudad" title="Ciudades">
+                                        <span>Ciudades</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Proceso" title="Procesos">
+                                        <span>Procesos</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Actor" title="Actores">
+                                        <span>Actores</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Documento" title="Documentos">
+                                        <span>Documentos</span>
+                                    </a>
+                                </li>
+                            }
 
-                        <li class="nav-heading ">
-                            <span>MANTENIMIENTO</span>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="OrganismoControl" title="Organismos de control">
-                                <span>Organismos de control</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="RequisitoLegal" title="Requisitos legales">
-                                <span>Requisitos legales</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Ciudad" title="Ciudades">
-                                <span>Ciudades</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Proceso" title="Procesos">
-                                <span>Procesos</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Actor" title="Actores">
-                                <span>Actores</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-action="Index" asp-controller="Documento" title="Documentos">
-                                <span>Documentos</span>
-                            </a>
-                        </li>
+                            if (User.IsInRole(Perfiles.Gerencia))
+                            {
+                                <li class="nav-heading ">
+                                    <span>GESTIÓN GERENCIAL</span>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Requisito" title="Estado de requisitos">
+                                        <span>Estado de requisitos</span>
+                                    </a>
+                                </li>
+                            }
+
+                            if (User.IsInRole(Perfiles.Administrador))
+                            {
+                                <li class="nav-heading ">
+                                    <span>USUARIOS</span>
+                                </li>
+                                <li>
+                                    <a asp-action="Index" asp-controller="Account" title="Gestión de usuarios">
+                                        <span>Gestión de usuarios</span>
+                                    </a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </nav>
             </div>

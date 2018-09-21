@@ -9,5 +9,6 @@ namespace SistemasLegales.Models.Utiles
     {
         public static string Gerencia { get { return "Gerencia"; } }
         public static string Gestor { get { return "Gestor"; } }
+        public static string Administrador { get { return "Administrador"; } }
     }
 }

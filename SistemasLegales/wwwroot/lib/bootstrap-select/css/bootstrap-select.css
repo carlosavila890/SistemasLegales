@@ -17,6 +17,7 @@ select.selectpicker {
   width: 100%;
   padding-right: 25px;
   z-index: 1;
+  height:34px !important;
 }
 .bootstrap-select > select {
   position: absolute !important;

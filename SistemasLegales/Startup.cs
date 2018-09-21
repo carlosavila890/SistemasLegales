@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EnviarCorreo;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
@@ -51,8 +52,24 @@ namespace SistemasLegales
             });
 
             services.AddAuthorization(opts => {
+                opts.AddPolicy("Administracion", policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Administrador");
+                });
+
                 opts.AddPolicy("Gestion", policy => {
-                    policy.RequireUserName("Gestor");
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Gestor");
+                });
+
+                opts.AddPolicy("Gerencia", policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Gerencia");
+                });
+
+                opts.AddPolicy("GerenciaGestion", policy => {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireRole("Gerencia", "Gestor");
                 });
             });
 
@@ -86,7 +103,7 @@ namespace SistemasLegales
             ConstantesTimerEnvioNotificacion.Segundos = int.Parse(Configuration.GetSection("Segundos").Value);
         }
         
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TimedHostedService timedHostedService, IApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TimedHostedService timedHostedService, IApplicationLifetime applicationLifetime, IServiceProvider serviceProvider)
         {
             var defaultCulture = new CultureInfo("es-ec");
             defaultCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -124,11 +141,64 @@ namespace SistemasLegales
                     name: "default",
                     template: "{controller=Account}/{action=Login}/{id?}");
             });
-            timedHostedService.StartAsync();
+            //CreateRoles(serviceProvider);
+            //CreateUsers(serviceProvider);
 
-            applicationLifetime.ApplicationStopping.Register(() => {
+            timedHostedService.StartAsync();
+            applicationLifetime.ApplicationStopping.Register(() =>
+            {
                 timedHostedService.StopAsync();
             });
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            string[] rolesName = new string[] { Perfiles.Administrador, Perfiles.Gerencia, Perfiles.Gestor };
+            IdentityResult result;
+            foreach (var item in rolesName)
+            {
+                var roleExist = roleManager.RoleExistsAsync(item).Result;
+                if (!roleExist)
+                {
+                    //Se crean los roles si no existen en la BD
+                    result = roleManager.CreateAsync(new IdentityRole(item)).Result;
+                }
+            }
+        }
+
+        private void CreateUsers(IServiceProvider serviceProvider)
+        {
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var usersName = new ApplicationUser[]
+            {
+                new ApplicationUser { UserName = "Administrador", Email = "administrador@bekaert.com" },
+                new ApplicationUser { UserName = "Gerencia", Email = "gerencia@bekaert.com" },
+                new ApplicationUser { UserName = "Gestor", Email = "gestor@bekaert.com" }
+            };
+            IdentityResult result;
+            foreach (var item in usersName)
+            {
+                var user = userManager.FindByNameAsync(item.UserName).Result;
+                if (user == null)
+                {
+                    //Se crean los usuarios si no existen en la BD
+                    switch (item.UserName)
+                    {
+                        case "Administrador": result = userManager.CreateAsync(item, "Administrador2018*").Result; break;
+                        case "Gerencia": result = userManager.CreateAsync(item, "Gerencia2018*").Result; break;
+                        case "Gestor": result = userManager.CreateAsync(item, "Gestor2018*").Result; break;
+                    }
+                }
+
+                //Se asignan los roles a los usuarios si no existen en la BD
+                switch (item.UserName)
+                {
+                    case "Administrador": result = userManager.AddToRoleAsync(item, Perfiles.Administrador).Result; break;
+                    case "Gerencia": result = userManager.AddToRoleAsync(item, Perfiles.Gerencia).Result; break;
+                    case "Gestor": result = userManager.AddToRoleAsync(item, Perfiles.Gestor).Result; break;
+                }
+            }
         }
     }
 }

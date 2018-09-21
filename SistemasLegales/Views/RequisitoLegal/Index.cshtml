@@ -13,7 +13,7 @@
 }
 
 @{
-    if (User.Identity.Name == Perfiles.Gestor)
+    if (User.IsInRole(Perfiles.Gestor))
     {
         <div class="row">
             <div class="col-lg-2 col-sm-4 col-xs-12">
@@ -29,8 +29,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.FirstOrDefault().Nombre)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstOrDefault().IdOrganismoControl)
+            </th>
             @{
-                if (User.Identity.Name == Perfiles.Gestor)
+                if (User.IsInRole(Perfiles.Gestor))
                 {
                     <th>
                         Opciones
@@ -47,12 +50,15 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Nombre)
                     </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OrganismoControl.Nombre)
+                    </td>
                     @{
-                        if (User.Identity.Name == Perfiles.Gestor)
+                        if (User.IsInRole(Perfiles.Gestor))
                         {
                             <td>
                                 <a asp-action="Gestionar" asp-route-id="@item.IdRequisitoLegal">Editar</a> |
-                                <a href="javascript:void(0);" class="btnEliminar" id="@item.IdRequisitoLegal" data-descripcion="&#191;Desea eliminar el Requisito legal... ?">Eliminar</a>
+                                <a href="javascript:void(0);" class="btnEliminar" id="@item.IdRequisitoLegal" onclick="MiApp.Datatables.eventoBtnEliminar(this)" data-descripcion="&#191;Desea eliminar el Requisito legal... ?">Eliminar</a>
                             </td>
                         }
                     }
@@ -62,7 +68,7 @@
     </tbody>
 </table>
 @{
-    if (User.Identity.Name == Perfiles.Gestor)
+    if (User.IsInRole(Perfiles.Gestor))
     {
         await Html.RenderPartialAsync("_Eliminar");
     }

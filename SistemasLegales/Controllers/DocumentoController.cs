@@ -4,13 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemasLegales.Models.Entidades;
 using SistemasLegales.Models.Extensores;
 using SistemasLegales.Models.Utiles;
 namespace SistemasLegales.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "Gestion")]
     public class DocumentoController : Controller
     {
         private readonly SistemasLegalesContext db;
@@ -25,7 +26,7 @@ namespace SistemasLegales.Controllers
             var lista = new List<Documento>();
             try
             {
-                lista = await db.Documento.OrderBy(c => c.Nombre).ToListAsync();
+                lista = await db.Documento.Include(c=> c.RequisitoLegal).ThenInclude(c=> c.OrganismoControl).OrderBy(c => c.Nombre).ToListAsync();
             }
             catch (Exception)
             {
@@ -33,16 +34,16 @@ namespace SistemasLegales.Controllers
             }
             return View(lista);
         }
-
-        [Authorize(Policy = "Gestion")]
+        
         public async Task<IActionResult> Gestionar(int? id)
         {
             try
             {
                 ViewBag.accion = id == null ? "Crear" : "Editar";
+                ViewData["RequisitoLegal"] = new SelectList(await db.RequisitoLegal.OrderBy(c => c.Nombre).ToListAsync(), "IdRequisitoLegal", "Nombre");
                 if (id != null)
                 {
-                    var documento = await db.Documento.FirstOrDefaultAsync(c => c.IdDocumento == id);
+                    var documento = await db.Documento.Include(c => c.RequisitoLegal).ThenInclude(c => c.OrganismoControl).FirstOrDefaultAsync(c => c.IdDocumento == id);
                     if (documento == null)
                         return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
 
@@ -58,25 +59,28 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Gestionar(Documento documento)
         {
             try
             {
                 ViewBag.accion = documento.IdDocumento == 0 ? "Crear" : "Editar";
+                Action accion = async () =>
+                {
+                    ViewData["RequisitoLegal"] = new SelectList(await db.RequisitoLegal.OrderBy(c => c.Nombre).ToListAsync(), "IdRequisitoLegal", "Nombre");
+                };
                 if (ModelState.IsValid)
                 {
                     var existeRegistro = false;
                     if (documento.IdDocumento == 0)
                     {
-                        if (!await db.Documento.AnyAsync(c => c.Nombre.ToUpper().Trim() == documento.Nombre.ToUpper().Trim()))
+                        if (!await db.Documento.AnyAsync(c => c.Nombre.ToUpper().Trim() == documento.Nombre.ToUpper().Trim() && c.IdRequisitoLegal == documento.IdRequisitoLegal))
                             db.Add(documento);
                         else
                             existeRegistro = true;
                     }
                     else
                     {
-                        if (!await db.Documento.Where(c => c.Nombre.ToUpper().Trim() == documento.Nombre.ToUpper().Trim()).AnyAsync(c => c.IdDocumento != documento.IdDocumento))
+                        if (!await db.Documento.Where(c => c.Nombre.ToUpper().Trim() == documento.Nombre.ToUpper().Trim() && c.IdRequisitoLegal == documento.IdRequisitoLegal).AnyAsync(c => c.IdDocumento != documento.IdDocumento))
                             db.Update(documento);
                         else
                             existeRegistro = true;
@@ -87,9 +91,9 @@ namespace SistemasLegales.Controllers
                         return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}");
                     }
                     else
-                        return this.VistaError(documento, $"{Mensaje.Error}|{Mensaje.ExisteRegistro}");
+                        return this.VistaError(documento, $"{Mensaje.Error}|{Mensaje.ExisteRegistro}", accion);
                 }
-                return this.VistaError(documento, $"{Mensaje.Error}|{Mensaje.ModeloInvalido}");
+                return this.VistaError(documento, $"{Mensaje.Error}|{Mensaje.ModeloInvalido}", accion);
             }
             catch (Exception)
             {
@@ -99,7 +103,6 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Eliminar(int id)
         {
             try

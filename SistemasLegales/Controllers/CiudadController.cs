@@ -11,7 +11,7 @@ using SistemasLegales.Models.Utiles;
 
 namespace SistemasLegales.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "Gestion")]
     public class CiudadController : Controller
     {
         private readonly SistemasLegalesContext db;
@@ -34,8 +34,7 @@ namespace SistemasLegales.Controllers
             }
             return View(lista);
         }
-
-        [Authorize(Policy = "Gestion")]
+        
         public async Task<IActionResult> Gestionar(int? id)
         {
             try
@@ -59,7 +58,6 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Gestionar(Ciudad ciudad)
         {
             try
@@ -100,7 +98,6 @@ namespace SistemasLegales.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Policy = "Gestion")]
         public async Task<IActionResult> Eliminar(int id)
         {
             try

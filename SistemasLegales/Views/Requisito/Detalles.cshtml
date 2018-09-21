@@ -18,13 +18,13 @@
     </thead>
     <tbody>
         <tr>
-            <td><label asp-for="IdOrganismoControl" class="negrita"></label></td>
-            <td>@Html.DisplayFor(m => m.OrganismoControl.Nombre)</td>
+            <td><label asp-for="Documento.RequisitoLegal.IdOrganismoControl" class="negrita"></label></td>
+            <td>@Html.DisplayFor(m => m.Documento.RequisitoLegal.OrganismoControl.Nombre)</td>
         </tr>
 
         <tr>
-            <td><label asp-for="IdRequisitoLegal" class="negrita"></label></td>
-            <td>@Html.DisplayFor(m => m.RequisitoLegal.Nombre)</td>
+            <td><label asp-for="Documento.IdRequisitoLegal" class="negrita"></label></td>
+            <td>@Html.DisplayFor(m => m.Documento.RequisitoLegal.Nombre)</td>
         </tr>
 
         <tr>
@@ -84,12 +84,12 @@
 
         <tr>
             <td><label asp-for="EmailNotificacion2" class="negrita"></label></td>
-            <td>@Html.DisplayFor(m => m.EmailNotificacion2)</td>
+            <td>@{await ViewContext.Writer.WriteAsync(Model?.EmailNotificacion2 ?? "-");}</td>
         </tr>
 
         <tr>
             <td><label asp-for="Observaciones" class="negrita"></label></td>
-            <td>@Html.DisplayFor(m => m.Observaciones)</td>
+            <td>@{await ViewContext.Writer.WriteAsync(Model?.Observaciones ?? "-");}</td>
         </tr>
     </tbody>
 </table>

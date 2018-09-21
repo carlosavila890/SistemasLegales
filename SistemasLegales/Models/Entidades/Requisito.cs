@@ -11,19 +11,12 @@ namespace SistemasLegales.Models.Entidades
 {
     public partial class Requisito : IValidatableObject
     {
+        public Requisito()
+        {
+            DocumentoRequisito = new HashSet<DocumentoRequisito>();
+        }
+
         public int IdRequisito { get; set; }
-
-        [Display(Name = "Organismo de control")]
-        [Required(ErrorMessage = "Debe seleccionar el {0}.")]
-        [Range(1, double.MaxValue, ErrorMessage = "Debe seleccionar el {0}.")]
-        public int IdOrganismoControl { get; set; }
-        public virtual OrganismoControl OrganismoControl { get; set; }
-
-        [Display(Name = "Requisito legal")]
-        [Required(ErrorMessage = "Debe seleccionar el {0}.")]
-        [Range(1, double.MaxValue, ErrorMessage = "Debe seleccionar el {0}.")]
-        public int IdRequisitoLegal { get; set; }
-        public virtual RequisitoLegal RequisitoLegal { get; set; }
 
         [Display(Name = "Documento")]
         [Required(ErrorMessage = "Debe seleccionar el {0}.")]
@@ -91,8 +84,7 @@ namespace SistemasLegales.Models.Entidades
         [Display(Name = "Correo notificación 1")]
         [StringLength(100, MinimumLength = 1, ErrorMessage = "El {0} no puede tener más de {1} y menos de {2} caracteres.")]
         public string EmailNotificacion1 { get; set; }
-
-        [Required(ErrorMessage = "Debe introducir el {0}.")]
+        
         [EmailAddress(ErrorMessage = "El {0} es inválido.")]
         [Display(Name = "Correo notificación 2")]
         [StringLength(100, MinimumLength = 1, ErrorMessage = "El {0} no puede tener más de {1} y menos de {2} caracteres.")]
@@ -119,11 +111,6 @@ namespace SistemasLegales.Models.Entidades
         public bool SemaforoRojo { get; set; }
 
         public virtual ICollection<DocumentoRequisito> DocumentoRequisito { get; set; }
-
-        public Requisito()
-        {
-            DocumentoRequisito = new HashSet<DocumentoRequisito>();
-        }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
@@ -167,9 +154,7 @@ namespace SistemasLegales.Models.Entidades
                         await db.SaveChangesAsync();
 
                         var requisito = await db.Requisito
-                            .Include(c => c.OrganismoControl)
-                            .Include(c => c.RequisitoLegal)
-                            .Include(c => c.Documento)
+                            .Include(c => c.Documento).ThenInclude(c=> c.RequisitoLegal.OrganismoControl)
                             .Include(c => c.Ciudad)
                             .Include(c => c.Proceso)
                             .Include(c=> c.ActorDuennoProceso)
@@ -178,17 +163,21 @@ namespace SistemasLegales.Models.Entidades
                             .Include(c=> c.Status)
                             .FirstOrDefaultAsync(c => c.IdRequisito == IdRequisito);
 
-                        await emailSender.SendEmailAsync(new List<string>()
+                        var listadoEmails = new List<string>()
                         {
                             ActorDuennoProceso.Email,
                             ActorResponsableGestSeg.Email,
                             ActorCustodioDocumento.Email,
-                            EmailNotificacion1,
-                            EmailNotificacion2
-                        }, "Notificación de caducidad de requisito.",
+                            EmailNotificacion1
+                        };
+
+                        if (!String.IsNullOrEmpty(EmailNotificacion2))
+                            listadoEmails.Add(EmailNotificacion2);
+
+                        await emailSender.SendEmailAsync(listadoEmails, "Notificación de caducidad de requisito.",
                         $@"Se le informa que está a punto de caducar un requisito en la aplicación Sistemas Legales con los datos siguientes: {System.Environment.NewLine}{System.Environment.NewLine}
-                            Organismo de control: {OrganismoControl.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
-                            Requisito legal: {RequisitoLegal.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
+                            Organismo de control: {Documento.RequisitoLegal.OrganismoControl.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
+                            Requisito legal: {Documento.RequisitoLegal.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
                             Documento: {Documento.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
                             Ciudad: {Ciudad.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}
                             Proceso: {Proceso.Nombre}, {System.Environment.NewLine}{System.Environment.NewLine}

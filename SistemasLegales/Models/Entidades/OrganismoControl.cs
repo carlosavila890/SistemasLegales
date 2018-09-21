@@ -8,7 +8,7 @@ namespace SistemasLegales.Models.Entidades
     {
         public OrganismoControl()
         {
-            AdminRequisitoLegal = new HashSet<Requisito>();
+            RequisitoLegal = new HashSet<RequisitoLegal>();
         }
 
         public int IdOrganismoControl { get; set; }
@@ -17,7 +17,7 @@ namespace SistemasLegales.Models.Entidades
         [StringLength(200, MinimumLength = 1, ErrorMessage = "El {0} no puede tener más de {1} y menos de {2} caracteres.")]
         [Display(Name = "Organismo de control")]
         public string Nombre { get; set; }
-
-        public virtual ICollection<Requisito> AdminRequisitoLegal { get; set; }
+        
+        public virtual ICollection<RequisitoLegal> RequisitoLegal { get; set; }
     }
 }

@@ -24,9 +24,10 @@ namespace SistemasLegales.Models.Extensores
             return routeValues == null ? controlador.RedirectToAction(nombreVista) : controlador.RedirectToAction(nombreVista, routeValues);
         }
 
-        public static IActionResult VistaError(this Controller controlador, object modelo, string msgError)
+        public static IActionResult VistaError(this Controller controlador, object modelo, string msgError, Action accion = null)
         {
             controlador.TempData["Mensaje"] = msgError;
+            accion?.Invoke();
             return controlador.View(modelo);
         }
     }
