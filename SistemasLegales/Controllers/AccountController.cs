@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SistemasLegales.Models;
 using SistemasLegales.Models.AccountViewModels;
 using SistemasLegales.Models.Entidades;
+using SistemasLegales.Models.Extensores;
 using SistemasLegales.Models.Utiles;
 using SistemasLegales.Services;
 
@@ -41,6 +43,22 @@ namespace SistemasLegales.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+        }
+
+        [HttpGet]
+        [Authorize(Policy = "Administracion")]
+        public async Task<IActionResult> Users()
+        {
+            var lista = new List<ApplicationUser>();
+            try
+            {
+                lista = await _userManager.Users.Include(c=> c.Roles).ToListAsync();
+            }
+            catch (Exception)
+            {
+                TempData["Mensaje"] = $"{Mensaje.Error}|{Mensaje.ErrorListado}";
+            }
+            return View(lista);
         }
 
         //
@@ -93,10 +111,33 @@ namespace SistemasLegales.Controllers
         // GET: /Account/Register
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Register(string returnUrl = null)
+        public async Task<IActionResult> Register(string id, string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+            try
+            {
+                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["Roles"] = new SelectList(new List<string>() { Perfiles.Administrador, Perfiles.Gerencia, Perfiles.Gestor });
+                if (!String.IsNullOrEmpty(id))
+                {
+                    var user = await _userManager.FindByIdAsync(id);
+                    if (user == null)
+                        return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}", nameof(Users));
+
+                    var roles = await _userManager.GetRolesAsync(user);
+                    return View(new RegisterViewModel
+                    {
+                        Id = user.Id,
+                        UserName = user.UserName,
+                        Email = user.Email,
+                        Role = roles.FirstOrDefault()
+                    });
+                }
+                return View();
+            }
+            catch (Exception)
+            {
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.ErrorCargarDatos}", nombreVista: nameof(Users));
+            }
         }
 
         //
@@ -106,30 +147,66 @@ namespace SistemasLegales.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            try
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                await _userManager.AddToRoleAsync(user, model.Role);
-                if (result.Succeeded)
+                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["Roles"] = new SelectList(new List<string>() { Perfiles.Administrador, Perfiles.Gerencia, Perfiles.Gestor });
+                if (ModelState.IsValid)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToLocal(returnUrl);
-                }
-                AddErrors(result);
-            }
+                    IdentityResult result;
+                    if (String.IsNullOrEmpty(model.Id))
+                    {
+                        var user = new ApplicationUser { UserName = model.UserName, Email = $"{model.UserName.ToLower()}@bekaert.com" };
+                        result = await _userManager.CreateAsync(user, model.Password);
+                        await _userManager.AddToRoleAsync(user, model.Role);
+                    }
+                    else
+                    {
+                        var user = await _userManager.FindByIdAsync(model.Id);
+                        result = await _userManager.UpdateAsync(user);
 
-            // If we got this far, something failed, redisplay form
-            return View(model);
+                        //Eliminando roles
+                        await _userManager.RemoveFromRolesAsync(user, await _userManager.GetRolesAsync(user));
+
+                        //Insertando rol
+                        await _userManager.AddToRoleAsync(user, model.Role);
+                    }
+                    if (result.Succeeded)
+                    {
+                        //await _signInManager.SignInAsync(user, isPersistent: false);
+                        return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}", nombreVista: nameof(Users));
+                    }
+                    //AddErrors(result);
+                    return this.VistaError(model, $"{Mensaje.Error}|{Mensaje.ExisteUsuario}");
+                }
+                return this.VistaError(model, $"{Mensaje.Error}|{Mensaje.ModeloInvalido}");
+            }
+            catch (Exception)
+            {
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.Excepcion}", nombreVista: nameof(Users));
+            }
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Eliminar(string id)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                    return this.Redireccionar($"{Mensaje.Informacion}|{Mensaje.Satisfactorio}", nombreVista: nameof(Users));
+                }
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.RegistroNoEncontrado}");
+            }
+            catch (Exception)
+            {
+                return this.Redireccionar($"{Mensaje.Error}|{Mensaje.BorradoNoSatisfactorio}");
+            }
+        }
+
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -454,7 +531,6 @@ namespace SistemasLegales.Controllers
         }
 
         #region Helpers
-
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)
@@ -474,7 +550,6 @@ namespace SistemasLegales.Controllers
                 return RedirectToAction(nameof(PrincipalController.Index), "Principal");
             }
         }
-
         #endregion
     }
 }

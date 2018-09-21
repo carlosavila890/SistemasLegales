@@ -8,11 +8,12 @@ namespace SistemasLegales.Models.AccountViewModels
 {
     public class RegisterViewModel
     {
+        public string Id { get; set; }
+
         [Required(ErrorMessage = "Debe introducir el {0}.")]
         [Display(Name = "Usuario")]
         public string UserName { get; set; }
-
-        [Required(ErrorMessage = "Debe introducir el {0}.")]
+        
         [EmailAddress(ErrorMessage = "El {0} es inválido.")]
         [Display(Name = "Correo electrónico")]
         public string Email { get; set; }
@@ -23,14 +24,14 @@ namespace SistemasLegales.Models.AccountViewModels
         [Display(Name = "Contraseña")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Debe introducir la {0}.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirmar contraseña")]
+        [Display(Name = "Confirmación de contraseña")]
         [Compare("Password", ErrorMessage = "La contraseña y su confirmación no coinciden.")]
         public string ConfirmPassword { get; set; }
 
         [Required(ErrorMessage = "Debe seleccionar el {0}.")]
         [Display(Name = "Perfil")]
-        [Range(1, double.MaxValue, ErrorMessage = "Debe seleccionar el {0}.")]
         public string Role { get; set; }
     }
 }

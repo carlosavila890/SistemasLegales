@@ -1,42 +1,83 @@
 ﻿@model RegisterViewModel
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Titulo"] = "USUARIOS";
+    ViewData["Subtitulo"] = "Registro de usuarios";
+}
+@section Migas{
+    <li><a asp-action="Users">Usuarios</a></li>
+    <li class="active">Registro de usuarios</li>
+}
+@section CSS{
+    <link href="~/lib/bootstrap-select/css/bootstrap-select.min.css" rel="stylesheet" />
 }
 
-<h2>@ViewData["Title"].</h2>
+<form asp-controller="Account" asp-action="Register" method="post" class="form-horizontal">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    @{
+        if (Model != null)
+        {
+            <input type="hidden" asp-for="Id" />
+        }
+    }
+    <div class="row">
+        <div class="col-md-3 col-xs-4 form-control-label">
+            <label asp-for="UserName"></label>
+        </div>
+        <div class="col-md-5 col-xs-8">
+            <div class="form-group">
+                <input asp-for="UserName" class="form-control" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    <h4>Create a new account.</h4>
-    <hr />
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label asp-for="Email" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Email" class="form-control" />
-            <span asp-validation-for="Email" class="text-danger"></span>
+    <div class="row">
+        <div class="col-md-3 col-xs-4 form-control-label">
+            <label asp-for="Role"></label>
+        </div>
+        <div class="col-md-5 col-xs-8">
+            <div class="form-group">
+                <select asp-for="Role" class="form-control show-tick" data-live-search="true" asp-items="ViewBag.Roles"></select>
+                <span asp-validation-for="Role" class="text-danger"></span>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Password" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Password" class="form-control" />
-            <span asp-validation-for="Password" class="text-danger"></span>
+
+    <div class="row">
+        <div class="col-md-3 col-xs-4 form-control-label">
+            <label asp-for="Password"></label>
+        </div>
+        <div class="col-md-5 col-xs-8">
+            <div class="form-group">
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="ConfirmPassword" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+    <div class="row">
+        <div class="col-md-3 col-xs-4 form-control-label">
+            <label asp-for="ConfirmPassword"></label>
+        </div>
+        <div class="col-md-5 col-xs-8">
+            <div class="form-group">
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Register</button>
+
+    <div class="row">
+        <div class="col-md-offset-3 col-xs-offset-4">
+            <button type="submit" class="btn btn-primary ladda-button" data-style="expand-left" id="btn-guardar">
+                <span class="ladda-label" id="laddaSpanGuardar">ACEPTAR</span>
+            </button>
+            <a asp-action="Users" class="btn btn-default">CANCELAR</a>
         </div>
     </div>
 </form>
 
 @section Scripts {
+    @{ await Html.RenderPartialAsync("_SelectPartial"); }
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 }
