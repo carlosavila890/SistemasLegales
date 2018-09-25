@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 
 namespace SistemasLegales.Services
 {
-    public class TimedHostedService : IHostedService, IDisposable
+    public class TimedHostedService : IHostedService
     {
         private readonly SistemasLegalesContext db;
-        private Timer _timer;
         private readonly IEmailSender emailSender;
 
         public TimedHostedService(SistemasLegalesContext db, IEmailSender emailSender)
@@ -21,46 +20,7 @@ namespace SistemasLegales.Services
             this.emailSender = emailSender;
         }
 
-        public Task StartAsync()
-        {
-            DateTime fechaEjecucionTimer = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, ConstantesTimerEnvioNotificacion.Hora, ConstantesTimerEnvioNotificacion.Minutos, ConstantesTimerEnvioNotificacion.Segundos);
-            TimeSpan tiempoEspera = new TimeSpan();
-
-            if (DateTime.Now > fechaEjecucionTimer)
-            {
-                var fechaMannana = fechaEjecucionTimer.AddDays(1);
-                tiempoEspera = fechaMannana - DateTime.Now;
-            }
-            else
-                tiempoEspera = fechaEjecucionTimer - DateTime.Now;
-
-            bool isEjecutarTiempoEspera = true;
-            _timer = new Timer(async (state) => {
-                await EnviarNotificacionRequisitos(state);
-
-                if (isEjecutarTiempoEspera)
-                {
-                    _timer.Change(tiempoEspera, TimeSpan.Zero);
-                    isEjecutarTiempoEspera = false;
-                }
-                else
-                    _timer.Change(TimeSpan.FromDays(1), TimeSpan.Zero);
-            }, null, TimeSpan.Zero, TimeSpan.Zero);
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync()
-        {
-            _timer?.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
-        }
-
-        private async Task EnviarNotificacionRequisitos(object state)
+        public async Task EnviarNotificacionRequisitos()
         {
             try
             {

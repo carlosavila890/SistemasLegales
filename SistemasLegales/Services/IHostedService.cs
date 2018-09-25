@@ -8,7 +8,6 @@ namespace SistemasLegales.Services
 {
     public interface IHostedService
     {
-        Task StartAsync();
-        Task StopAsync();
+        Task EnviarNotificacionRequisitos();
     }
 }

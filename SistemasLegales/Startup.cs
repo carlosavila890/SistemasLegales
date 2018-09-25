@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EnviarCorreo;
+using Hangfire;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -41,6 +42,8 @@ namespace SistemasLegales
         {
             services.AddDbContext<SistemasLegalesContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddHangfire(_ => _.UseSqlServerStorage(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<SistemasLegalesContext>()
@@ -103,7 +106,7 @@ namespace SistemasLegales
             ConstantesTimerEnvioNotificacion.Segundos = int.Parse(Configuration.GetSection("Segundos").Value);
         }
         
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TimedHostedService timedHostedService, IApplicationLifetime applicationLifetime, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, TimedHostedService timedHostedService/*, IServiceProvider serviceProvider*/)
         {
             var defaultCulture = new CultureInfo("es-ec");
             defaultCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -144,11 +147,11 @@ namespace SistemasLegales
             //CreateRoles(serviceProvider);
             //CreateUsers(serviceProvider);
 
-            timedHostedService.StartAsync();
-            applicationLifetime.ApplicationStopping.Register(() =>
-            {
-                timedHostedService.StopAsync();
-            });
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
+
+            BackgroundJob.Enqueue(() => timedHostedService.EnviarNotificacionRequisitos() );
+            RecurringJob.AddOrUpdate(() => timedHostedService.EnviarNotificacionRequisitos(), $"{ConstantesTimerEnvioNotificacion.Minutos} {ConstantesTimerEnvioNotificacion.Hora} * * *");
         }
 
         private void CreateRoles(IServiceProvider serviceProvider)
